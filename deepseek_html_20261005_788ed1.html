@@ -1,0 +1,563 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
+<meta name="theme-color" content="#4a6fe3" />
+<title>Тесты о партнёре — для девушек и парней</title>
+<style>
+  :root {
+    --bg: #f5f7fa;
+    --card-bg: #ffffff;
+    --primary: #4a6fe3;
+    --primary-dark: #3457c9;
+    --text: #2b2d42;
+    --muted: #6c7086;
+    --yes: #2ecc71;
+    --sometimes: #f5b041;
+    --no: #e74c3c;
+    --border: #e4e8f0;
+    --radius: 14px;
+    --gap: clamp(10px, 2.5vw, 16px);
+  }
+  * { box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
+  html, body { margin: 0; padding: 0; }
+  body {
+    font-family: system-ui, -apple-system, "Segoe UI", Roboto, Arial, sans-serif;
+    background: var(--bg);
+    color: var(--text);
+    line-height: 1.5;
+    -webkit-font-smoothing: antialiased;
+    padding: clamp(10px, 3vw, 24px);
+    padding-left: max(clamp(10px, 3vw, 24px), env(safe-area-inset-left));
+    padding-right: max(clamp(10px, 3vw, 24px), env(safe-area-inset-right));
+    padding-bottom: max(clamp(10px, 3vw, 24px), env(safe-area-inset-bottom));
+    min-height: 100vh;
+  }
+  .container { max-width: 720px; margin: 0 auto; width: 100%; }
+
+  header.hero {
+    text-align: center;
+    margin-bottom: clamp(16px, 4vw, 28px);
+    padding: clamp(18px, 5vw, 28px) clamp(14px, 4vw, 24px);
+    background: linear-gradient(135deg, #4a6fe3, #6a8bff);
+    border-radius: var(--radius);
+    color: #fff;
+    box-shadow: 0 6px 20px rgba(74, 111, 227, 0.25);
+  }
+  header.hero h1 { margin: 0 0 6px; font-size: clamp(1.3rem, 5vw, 1.8rem); color: #fff; }
+  header.hero p  { margin: 0; color: rgba(255,255,255,0.9); font-size: clamp(0.85rem, 3.4vw, 1rem); }
+
+  .topbar {
+    display: flex; justify-content: space-between; align-items: center;
+    gap: 8px; margin-bottom: 12px;
+  }
+  .back-btn {
+    background: none; border: none; padding: 8px 12px; border-radius: 8px;
+    color: var(--primary); font-weight: 600; cursor: pointer;
+    font-size: clamp(0.85rem, 3.4vw, 0.95rem); min-height: 40px;
+  }
+  .back-btn:active { background: #eaf1ff; }
+
+  h2 { font-size: clamp(1.05rem, 3.8vw, 1.25rem); margin: clamp(14px, 3vw, 22px) 0 10px; }
+
+  .progress { height: 6px; background: var(--border); border-radius: 3px; overflow: hidden; margin: 0 0 8px; }
+  .progress-bar { height: 100%; width: 0%; background: linear-gradient(90deg, #4a6fe3, #ff6b6b); transition: width 0.3s ease; }
+  .progress-label { text-align: center; font-size: clamp(0.8rem, 3.2vw, 0.9rem); color: var(--muted); margin-bottom: 14px; }
+
+  .banner {
+    background: #fff8e1; border: 1px solid #ffe082; color: #7a5b00;
+    border-radius: 12px; padding: 12px 16px; margin-bottom: 14px;
+    font-size: clamp(0.82rem, 3.2vw, 0.92rem); display: none;
+  }
+  .banner.show { display: block; }
+
+  .questions-list { list-style: none; padding: 0; margin: 0; }
+  .question-item {
+    background: var(--card-bg); border-radius: var(--radius);
+    padding: clamp(12px, 3.5vw, 16px); margin-bottom: var(--gap);
+    box-shadow: 0 2px 8px rgba(0,0,0,0.04); min-height: 44px;
+  }
+  .question-text {
+    margin: 0 0 10px; font-weight: 500;
+    font-size: clamp(0.92rem, 3.6vw, 1rem); word-break: break-word;
+  }
+  .answers { display: flex; gap: 8px; flex-wrap: wrap; }
+  .answer-btn {
+    flex: 1 1 0; min-width: 80px; min-height: 44px;
+    border: 2px solid var(--border); background: #fff; border-radius: 10px;
+    font-size: clamp(0.85rem, 3.4vw, 0.95rem); font-weight: 600;
+    color: var(--muted); cursor: pointer; padding: 8px 6px;
+    transition: all 0.15s ease; touch-action: manipulation;
+  }
+  .answer-btn:active { transform: scale(0.96); }
+  .answer-btn.active.pos-0 { background: var(--yes);       border-color: var(--yes);       color: #fff; }
+  .answer-btn.active.pos-1 { background: var(--sometimes); border-color: var(--sometimes); color: #fff; }
+  .answer-btn.active.pos-2 { background: var(--no);        border-color: var(--no);        color: #fff; }
+
+  @media (hover: hover) and (pointer: fine) {
+    .answer-btn:hover { border-color: var(--primary); color: var(--primary); }
+    .answer-btn.active:hover { color: #fff; }
+  }
+
+  .actions { display: flex; flex-wrap: wrap; gap: 10px; justify-content: center; margin-top: clamp(18px, 4vw, 28px); }
+  .btn {
+    background: #fff; color: var(--primary); border: 2px solid var(--primary);
+    border-radius: 999px; padding: 12px 22px;
+    font-size: clamp(0.85rem, 3.4vw, 1rem); font-weight: 600;
+    cursor: pointer; min-height: 44px; touch-action: manipulation;
+    transition: background 0.2s ease, color 0.2s ease, transform 0.1s ease;
+    text-decoration: none; display: inline-flex; align-items: center; justify-content: center; gap: 6px;
+  }
+  .btn:active { transform: scale(0.96); }
+  .btn.primary { background: var(--primary); color: #fff; }
+  .btn.danger  { color: var(--no); border-color: var(--no); }
+  .btn.small   { padding: 8px 14px; min-height: 40px; font-size: 0.88rem; }
+  @media (hover: hover) and (pointer: fine) {
+    .btn:hover { background: var(--primary); color: #fff; }
+    .btn.primary:hover { background: var(--primary-dark); border-color: var(--primary-dark); }
+    .btn.danger:hover  { background: var(--no); color: #fff; }
+  }
+
+  /* Карточки выбора теста */
+  .test-picker { display: grid; grid-template-columns: 1fr; gap: var(--gap); }
+  @media (min-width: 560px) { .test-picker { grid-template-columns: 1fr 1fr; } }
+
+  .test-card {
+    background: var(--card-bg); border-radius: var(--radius);
+    padding: clamp(16px, 4vw, 20px); box-shadow: 0 2px 8px rgba(0,0,0,0.04);
+    cursor: pointer; border: 2px solid transparent;
+    transition: transform 0.15s ease, box-shadow 0.2s ease, border-color 0.2s ease;
+    text-align: left;
+  }
+  .test-card:active { transform: scale(0.98); }
+  @media (hover: hover) and (pointer: fine) {
+    .test-card:hover { transform: translateY(-2px); box-shadow: 0 6px 20px rgba(74,111,227,0.15); border-color: var(--primary); }
+  }
+  .test-card .emoji { font-size: 2rem; display: block; margin-bottom: 6px; }
+  .test-card h3 { margin: 0 0 4px; font-size: clamp(1rem, 3.8vw, 1.15rem); }
+  .test-card p  { margin: 0; color: var(--muted); font-size: clamp(0.85rem, 3.3vw, 0.95rem); }
+  .test-card .meta { margin-top: 10px; font-size: 0.8rem; color: var(--primary); font-weight: 600; }
+
+  footer { margin-top: clamp(28px, 6vw, 48px); text-align: center; color: #8f9bb3; font-size: clamp(0.8rem, 3.2vw, 0.9rem); }
+
+  .toast {
+    position: fixed; left: 50%; bottom: calc(20px + env(safe-area-inset-bottom));
+    transform: translateX(-50%) translateY(20px);
+    background: #2b2d42; color: #fff; padding: 12px 20px; border-radius: 999px;
+    font-size: 0.9rem; opacity: 0; pointer-events: none;
+    transition: opacity 0.25s ease, transform 0.25s ease; z-index: 999;
+    max-width: calc(100% - 32px); text-align: center;
+  }
+  .toast.show { opacity: 1; transform: translateX(-50%) translateY(0); }
+
+  .hidden { display: none !important; }
+
+  @media (max-width: 360px) {
+    .answer-btn { min-width: 0; font-size: 0.78rem; padding: 6px 4px; }
+    .btn { padding: 10px 16px; }
+  }
+  @media (min-width: 768px) { body { padding: 32px; } }
+</style>
+</head>
+<body>
+<div class="container">
+
+  <!-- ЭКРАН 1: ВЫБОР ТЕСТА -->
+  <section id="screen-home">
+    <header class="hero">
+      <h1>💞 Тесты о партнёре</h1>
+      <p>Выбери тест — для девушек или для парней</p>
+    </header>
+
+    <div class="test-picker">
+      <button class="test-card" data-test="female">
+        <span class="emoji">👩‍❤️‍👨</span>
+        <h3>Для девушек</h3>
+        <p>30 вопросов: что должно быть в парне?</p>
+        <div class="meta">▶ Пройти тест</div>
+      </button>
+
+      <button class="test-card" data-test="male">
+        <span class="emoji">👨‍❤️‍👩</span>
+        <h3>Для парней</h3>
+        <p>30 вопросов: что должно быть в девушке?</p>
+        <div class="meta">▶ Пройти тест</div>
+      </button>
+    </div>
+
+    <footer>
+      <p>Всё работает офлайн. Ответы никуда не отправляются.</p>
+    </footer>
+  </section>
+
+  <!-- ЭКРАН 2: ПРОХОЖДЕНИЕ -->
+  <section id="screen-run" class="hidden">
+    <div class="topbar">
+      <button class="back-btn" id="backBtn">← К выбору теста</button>
+    </div>
+
+    <header class="hero">
+      <h1 id="runTitle">Тест</h1>
+      <p id="runSubtitle"></p>
+    </header>
+
+    <div class="banner" id="runBanner">
+      👀 Ты открыл(а) ссылку с готовыми ответами. Они уже отмечены ниже.
+    </div>
+
+    <div class="progress"><div class="progress-bar" id="runBar"></div></div>
+    <div class="progress-label" id="runProgressLabel">Отвечено: 0 из 0</div>
+
+    <ul class="questions-list" id="runList"></ul>
+
+    <div class="actions">
+      <button class="btn primary" id="shareAnswersBtn">🔗 Поделиться ответами</button>
+      <button class="btn" id="downloadBtn">💾 Скачать</button>
+      <button class="btn danger" id="resetBtn">🗑️ Сбросить</button>
+    </div>
+  </section>
+
+</div>
+
+<div class="toast" id="toast"></div>
+
+<script>
+/* =========================================================
+   ТЕСТЫ
+   ========================================================= */
+
+const TESTS = {
+  female: {
+    id: 'female',
+    title: '30 вопросов',
+    subtitle: 'Что должно быть в парне?',
+    variants: ['Да', 'Иногда', 'Нет'],
+    questions: [
+      "Умеет ли он слушать и не перебивать, когда ты рассказываешь что-то важное?",
+      "Готов ли он признавать свои ошибки и извиняться, если был неправ?",
+      "Уважает ли он твои границы и не давит, если ты говоришь «нет»?",
+      "Поддерживает ли он тебя в трудные моменты, а не обесценивает переживания?",
+      "Есть ли у него чувство ответственности и умение доводить дела до конца?",
+      "Способен ли он заботиться о себе: режим, здоровье, базовые привычки?",
+      "Ценит ли он твою самостоятельность и не пытается контролировать каждый шаг?",
+      "Есть ли у него эмпатия: замечает ли он, когда тебе грустно или тяжело?",
+      "Умеет ли он говорить о своих чувствах, а не замыкаться в себе?",
+      "Есть ли у него здоровое отношение к деньгам и способность планировать бюджет?",
+      "Интересуется ли он тем, что тебе нравится, даже если это не его тема?",
+      "Способен ли он шутить и смеяться над собой, а не обижаться на лёгкую иронию?",
+      "Есть ли у него увлечения, которые делают его внутренне наполненным?",
+      "Готов ли он обсуждать конфликты спокойно, без криков и оскорблений?",
+      "Уважает ли он других людей: официантов, курьеров, соседей, родителей?",
+      "Есть ли в нём надёжность: если пообещал — делает, без пустых слов?",
+      "Способен ли он просить о помощи, когда ему тяжело, и не считать это слабостью?",
+      "Есть ли у него уважение к личному пространству и понимание, что иногда нужно побыть одному?",
+      "Готов ли он учиться и меняться, если видит, что что-то делает не так?",
+      "Есть ли у него баланс между работой и отдыхом, не выгорает ли он постоянно?",
+      "Умеет ли он проявлять заботу в мелочах: заметить, что ты устала, предложить чай?",
+      "Есть ли у него честность и отсутствие привычки врать «по мелочам»?",
+      "Способен ли он принимать твои недостатки и не пытаться переделать тебя?",
+      "Есть ли у него здоровые отношения с близкими, или семья — постоянный источник стресса?",
+      "Готов ли он вкладываться в отношения: время, внимание, усилия?",
+      "Есть ли у него умение планировать будущее и обсуждать его с тобой?",
+      "Способен ли он на уважение в споре: не переходить на личности и не унижать?",
+      "Есть ли у него забота о внешнем виде и опрятность, но без одержимости?",
+      "Умеет ли он быть рядом не только в радости, но и в сложных ситуациях?",
+      "Есть ли в нём искренность: ты чувствуешь, что он настоящий, а не играет роль?"
+    ]
+  },
+
+  male: {
+    id: 'male',
+    title: '30 вопросов',
+    subtitle: 'Что должно быть в девушке?',
+    variants: ['Да', 'Иногда', 'Нет'],
+    questions: [
+      "Умеет ли она слушать и слышать, а не только ждать своей очереди сказать?",
+      "Готова ли она признавать ошибки и извиняться, если была неправа?",
+      "Уважает ли она твои границы и не давит, если ты говоришь «нет»?",
+      "Поддерживает ли она тебя в трудные моменты, а не обесценивает переживания?",
+      "Есть ли у неё чувство ответственности и умение доводить дела до конца?",
+      "Способна ли она заботиться о себе: режим, здоровье, базовые привычки?",
+      "Ценит ли она твою самостоятельность и не пытается контролировать каждый шаг?",
+      "Есть ли у неё эмпатия: замечает ли она, когда тебе грустно или тяжело?",
+      "Умеет ли она говорить о своих чувствах, а не молчать и копить обиды?",
+      "Есть ли у неё здоровое отношение к деньгам и способность планировать бюджет?",
+      "Интересуется ли она тем, что тебе нравится, даже если это не её тема?",
+      "Способна ли она шутить и смеяться над собой, а не обижаться на лёгкую иронию?",
+      "Есть ли у неё увлечения, которые делают её внутренне наполненной?",
+      "Готова ли она обсуждать конфликты спокойно, без криков и манипуляций?",
+      "Уважает ли она других людей: официантов, курьеров, соседей, твоих родителей?",
+      "Есть ли в ней надёжность: если пообещала — делает, без пустых слов?",
+      "Способна ли она просить о помощи, когда ей тяжело, и не считать это слабостью?",
+      "Есть ли у неё уважение к личному пространству и понимание, что иногда нужно побыть одному?",
+      "Готова ли она учиться и меняться, если видит, что что-то делает не так?",
+      "Есть ли у неё баланс между работой и отдыхом, не выгорает ли она постоянно?",
+      "Умеет ли она проявлять заботу в мелочах: заметить, что ты устал, приготовить чай?",
+      "Есть ли у неё честность и отсутствие привычки врать «по мелочам»?",
+      "Способна ли она принимать твои недостатки и не пытаться переделать тебя?",
+      "Есть ли у неё здоровые отношения с близкими, или семья — постоянный источник стресса?",
+      "Готова ли она вкладываться в отношения: время, внимание, усилия?",
+      "Есть ли у неё умение планировать будущее и обсуждать его с тобой?",
+      "Способна ли она на уважение в споре: не переходить на личности и не унижать?",
+      "Есть ли у неё забота о внешнем виде и опрятность, но без одержимости?",
+      "Умеет ли она быть рядом не только в радости, но и в сложных ситуациях?",
+      "Есть ли в ней искренность: ты чувствуешь, что она настоящая, а не играет роль?"
+    ]
+  }
+};
+
+/* =========================================================
+   СОСТОЯНИЕ
+   ========================================================= */
+
+let currentTest = null;
+let state = [];
+
+/* =========================================================
+   ЭКРАНЫ
+   ========================================================= */
+
+const screens = {
+  home: document.getElementById('screen-home'),
+  run:  document.getElementById('screen-run')
+};
+
+function showScreen(name) {
+  Object.values(screens).forEach(s => s.classList.add('hidden'));
+  screens[name].classList.remove('hidden');
+  window.scrollTo(0, 0);
+}
+
+/* =========================================================
+   СТАРТ ТЕСТА
+   ========================================================= */
+
+document.querySelectorAll('[data-test]').forEach(btn => {
+  btn.addEventListener('click', () => {
+    const key = btn.dataset.test;
+    startTest(TESTS[key]);
+  });
+});
+
+document.getElementById('backBtn').addEventListener('click', () => {
+  history.replaceState(null, '', location.pathname + location.search);
+  showScreen('home');
+});
+
+const runTitle = document.getElementById('runTitle');
+const runSubtitle = document.getElementById('runSubtitle');
+const runList = document.getElementById('runList');
+const runBar = document.getElementById('runBar');
+const runProgressLabel = document.getElementById('runProgressLabel');
+const runBanner = document.getElementById('runBanner');
+
+function startTest(test) {
+  currentTest = test;
+  state = new Array(test.questions.length).fill(-1);
+
+  runTitle.textContent = test.title;
+  runSubtitle.textContent = test.subtitle || '';
+
+  runList.innerHTML = '';
+  test.questions.forEach((q, i) => {
+    const li = document.createElement('li');
+    li.className = 'question-item';
+    const variantsHtml = test.variants.map((v, vi) =>
+      `<button class="answer-btn pos-${vi}" data-value="${vi}">${escapeHtml(v)}</button>`
+    ).join('');
+    li.innerHTML = `
+      <p class="question-text">${i + 1}. ${escapeHtml(q)}</p>
+      <div class="answers" data-index="${i}">${variantsHtml}</div>
+    `;
+    runList.appendChild(li);
+  });
+
+  runBanner.classList.remove('show');
+  updateProgress();
+  showScreen('run');
+}
+
+runList.addEventListener('click', (e) => {
+  const btn = e.target.closest('.answer-btn');
+  if (!btn) return;
+  const wrapper = btn.parentElement;
+  const idx = +wrapper.dataset.index;
+  const val = +btn.dataset.value;
+
+  state[idx] = (state[idx] === val) ? -1 : val;
+  wrapper.querySelectorAll('.answer-btn').forEach(b => {
+    b.classList.toggle('active', +b.dataset.value === state[idx]);
+  });
+  updateProgress();
+});
+
+function updateProgress() {
+  const total = currentTest.questions.length;
+  const done = state.filter(v => v >= 0).length;
+  runBar.style.width = (done / total * 100) + '%';
+  runProgressLabel.textContent = `Отвечено: ${done} из ${total}`;
+}
+
+/* =========================================================
+   СБРОС
+   ========================================================= */
+
+document.getElementById('resetBtn').addEventListener('click', () => {
+  if (!confirm('Сбросить все ответы?')) return;
+  state = new Array(currentTest.questions.length).fill(-1);
+  runList.querySelectorAll('.answer-btn').forEach(b => b.classList.remove('active'));
+  updateProgress();
+  history.replaceState(null, '', location.pathname + location.search);
+  runBanner.classList.remove('show');
+  showToast('Ответы сброшены');
+});
+
+/* =========================================================
+   ССЫЛКА НА ОТВЕТЫ
+   ========================================================= */
+
+function buildAnswersUrl() {
+  const url = new URL(location.href);
+  const ans = state.map(v => v < 0 ? 0 : v + 1).join('');
+  url.hash = `t=${currentTest.id}&a=${ans}`;
+  return url.toString();
+}
+
+document.getElementById('shareAnswersBtn').addEventListener('click', async () => {
+  const answered = state.filter(v => v >= 0).length;
+  if (answered === 0) { showToast('Сначала ответь хотя бы на один вопрос'); return; }
+
+  const shareUrl = buildAnswersUrl();
+
+  if (navigator.share) {
+    try {
+      await navigator.share({
+        title: currentTest.title,
+        text: 'Мои ответы: ' + currentTest.subtitle,
+        url: shareUrl
+      });
+      return;
+    } catch (e) {}
+  }
+  try {
+    await navigator.clipboard.writeText(shareUrl);
+    showToast('Ссылка с ответами скопирована ✅');
+  } catch (e) {
+    prompt('Скопируй ссылку:', shareUrl);
+  }
+});
+
+/* =========================================================
+   СКАЧИВАНИЕ
+   ========================================================= */
+
+document.getElementById('downloadBtn').addEventListener('click', () => {
+  const answered = state.filter(v => v >= 0).length;
+  if (answered === 0) { showToast('Сначала ответь хотя бы на один вопрос'); return; }
+
+  const lines = [];
+  lines.push('МОИ ОТВЕТЫ');
+  lines.push(currentTest.title);
+  if (currentTest.subtitle) lines.push('«' + currentTest.subtitle + '»');
+  lines.push('Дата: ' + new Date().toLocaleString('ru-RU'));
+  lines.push('Отвечено: ' + answered + ' из ' + currentTest.questions.length);
+  lines.push('—'.repeat(40));
+  lines.push('');
+
+  const stats = new Array(currentTest.variants.length).fill(0);
+  currentTest.questions.forEach((q, i) => {
+    const v = state[i];
+    const ans = v < 0 ? '— (без ответа)' : currentTest.variants[v];
+    if (v >= 0) stats[v]++;
+    lines.push((i + 1) + '. ' + q);
+    lines.push('   Ответ: ' + ans);
+    lines.push('');
+  });
+
+  lines.push('—'.repeat(40));
+  lines.push('ИТОГИ:');
+  currentTest.variants.forEach((v, i) => {
+    lines.push(v + ': ' + stats[i]);
+  });
+  lines.push('');
+  lines.push('Ссылка с ответами:');
+  lines.push(buildAnswersUrl());
+
+  const blob = new Blob([lines.join('\n')], { type: 'text/plain;charset=utf-8' });
+  const url = URL.createObjectURL(blob);
+  const a = document.createElement('a');
+  a.href = url;
+  a.download = `otvety-${currentTest.id}-${new Date().toISOString().slice(0,10)}.txt`;
+  document.body.appendChild(a);
+  a.click();
+  document.body.removeChild(a);
+  URL.revokeObjectURL(url);
+  showToast('Файл скачан 💾');
+});
+
+/* =========================================================
+   ЧТЕНИЕ ССЫЛКИ
+   ========================================================= */
+
+function loadFromHash() {
+  const hash = location.hash.slice(1);
+  if (!hash) return false;
+  const params = new URLSearchParams(hash);
+  const t = params.get('t');
+  const a = params.get('a');
+  if (!t || !TESTS[t]) return false;
+
+  startTest(TESTS[t]);
+
+  if (a) {
+    const arr = a.split('').map(c => {
+      const n = +c;
+      return n >= 1 ? n - 1 : -1;
+    });
+    if (arr.length === currentTest.questions.length) {
+      state = arr;
+      runList.querySelectorAll('.answers').forEach((wrapper, i) => {
+        wrapper.querySelectorAll('.answer-btn').forEach(b => {
+          b.classList.toggle('active', +b.dataset.value === state[i]);
+        });
+      });
+      updateProgress();
+      runBanner.classList.add('show');
+    }
+  }
+  return true;
+}
+
+/* =========================================================
+   УТИЛИТЫ
+   ========================================================= */
+
+function escapeHtml(s) {
+  return String(s).replace(/[&<>"']/g, c => ({
+    '&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'
+  }[c]));
+}
+
+let toastTimer = null;
+const toast = document.getElementById('toast');
+function showToast(msg) {
+  toast.textContent = msg;
+  toast.classList.add('show');
+  clearTimeout(toastTimer);
+  toastTimer = setTimeout(() => toast.classList.remove('show'), 2200);
+}
+
+/* =========================================================
+   ИНИЦИАЛИЗАЦИЯ
+   ========================================================= */
+
+if (!loadFromHash()) {
+  showScreen('home');
+}
+window.addEventListener('hashchange', () => {
+  if (!loadFromHash()) showScreen('home');
+});
+</script>
+</body>
+</html>
